@@ -19,14 +19,28 @@ public class LoginServlet extends HttpServlet {
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         String username = request.getParameter("username");
         String password = request.getParameter("password");
-        if (username.equals("admin")&&password.equals("admin")){
-            HttpSession session = request.getSession();
-            session.setAttribute("username",username);
-            session.setAttribute("password",password);
-            response.sendRedirect("success.jsp");
-        }else {
-            request.setAttribute("flag",true);
-            request.getRequestDispatcher("login.jsp").forward(request,response);
+//        使用写死的账号密码进行登陆验证
+//        if (username.equals("admin")&&password.equals("admin")){
+//            HttpSession session = request.getSession();
+//            session.setAttribute("username",username);
+//            session.setAttribute("password",password);
+//            response.sendRedirect("success.jsp");
+//        }else {
+//            request.setAttribute("flag",true);
+//            request.getRequestDispatcher("login.jsp").forward(request,response);
+//        }
+        try {
+            boolean result = UserDao.login(username,password);
+            if (result){
+                HttpSession session = request.getSession();
+                session.setAttribute("username",username);
+                response.sendRedirect("success.jsp");
+            }else {
+                request.setAttribute("flag",true);
+                request.getRequestDispatcher("login.jsp").forward(request,response);
+            }
+        }catch (Exception e){
+            e.printStackTrace();
         }
     }
 
